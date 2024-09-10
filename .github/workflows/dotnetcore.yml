@@ -1,7 +1,12 @@
 name: eShopOnWeb Build and Test
 
-#Triggers (uncomment line below to use it)
-#on: [push, pull_request, workflow_dispatch]
+# Triggers (uncomment the appropriate line based on your needs)
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -9,29 +14,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-        dotnet-quality: 'preview'
+      - uses: actions/checkout@v4
+      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          dotnet-quality: 'preview'
 
-    - name: Build with dotnet
-      run: dotnet build ./eShopOnWeb.sln --configuration Release
-    
-    - name: Install Trivy
-      run: |
-         sudo apt-get update
-         sudo apt-get install -y wget
-         wget https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb
-         sudo dpkg -i trivy_0.41.0_Linux-64bit.deb
+      - name: Build with dotnet
+        run: dotnet build ./eShopOnWeb.sln --configuration Release
 
-    - name: Generate CycloneDX SBOM
-       run: |
-         trivy sbom --format cyclonedx --output sbom.cyclonedx.json .
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb
+          sudo dpkg -i trivy_0.41.0_Linux-64bit.deb
 
-    - name: Upload SBOM artifact
-       uses: actions/upload-artifact@v3
-       with:
-         name: CycloneDX-SBOM
-         path: sbom.cyclonedx.json
+      - name: Generate CycloneDX SBOM
+        run: trivy sbom --format cyclonedx --output sbom.cyclonedx.json .
