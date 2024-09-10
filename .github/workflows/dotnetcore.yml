@@ -33,4 +33,4 @@ jobs:
           sudo dpkg -i trivy_0.41.0_Linux-64bit.deb
 
       - name: Generate CycloneDX SBOM
-        run: trivy sbom --format cyclonedx --output sbom.cyclonedx.json .
+        run: trivy fs --format cyclonedx --output sbom.cyclonedx.json .
