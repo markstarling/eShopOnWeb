@@ -34,3 +34,10 @@ jobs:
 
       - name: Generate CycloneDX SBOM
         run: trivy fs --format cyclonedx --output sbom.cyclonedx.json .
+
+      # Upload the generated SBOM as an artifact
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: CycloneDX-SBOM
+          path: sbom.cyclonedx.json
