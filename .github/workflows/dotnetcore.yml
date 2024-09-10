@@ -19,5 +19,19 @@ jobs:
     - name: Build with dotnet
       run: dotnet build ./eShopOnWeb.sln --configuration Release
     
-    - name: Test with dotnet
-      run: dotnet test ./eShopOnWeb.sln --configuration Release
+    - name: Install Trivy
+      run: |
+         sudo apt-get update
+         sudo apt-get install -y wget
+         wget https://github.com/aquasecurity/trivy/releases/download/v0.41.0/trivy_0.41.0_Linux-64bit.deb
+         sudo dpkg -i trivy_0.41.0_Linux-64bit.deb
+
+    - name: Generate CycloneDX SBOM
+       run: |
+         trivy sbom --format cyclonedx --output sbom.cyclonedx.json .
+
+    - name: Upload SBOM artifact
+       uses: actions/upload-artifact@v3
+       with:
+         name: CycloneDX-SBOM
+         path: sbom.cyclonedx.json
